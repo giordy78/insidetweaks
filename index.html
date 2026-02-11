@@ -9,19 +9,13 @@
     <style>
         /* --- BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
-        html { 
-            background-color: #000; 
-            scroll-behavior: smooth; 
-        }
-        
+        html { background-color: #000; scroll-behavior: smooth; }
         body { background-color: #000; color: white; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-        /* --- BACKGROUND MESH OTTIMIZZATO --- */
+        /* --- BACKGROUND MESH --- */
         .bg-wrapper {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 0; background: #000; overflow: hidden; pointer-events: none;
-            transform: translateZ(0); /* Forza GPU */
         }
         
         .bg-wrapper::after {
@@ -33,20 +27,14 @@
         }
 
         .blob {
-            position: absolute; 
-            border-radius: 50%; 
-            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0) 70%);
-            filter: blur(45px); /* Ridotto per performance massime */
-            animation: float 20s infinite alternate ease-in-out;
-            will-change: transform; 
-            transform: translate3d(0,0,0); /* Forza accelerazione hardware */
-            z-index: 0;
+            position: absolute; border-radius: 50%; 
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0) 70%);
+            filter: blur(50px); animation: float 20s infinite alternate ease-in-out;
+            will-change: transform; transform: translateZ(0); z-index: 0;
         }
-        
-        /* Blob ridimensionati per caricare meno pixel */
-        .blob-1 { width: 700px; height: 700px; top: -10%; left: -10%; }
-        .blob-2 { width: 600px; height: 600px; top: 30%; right: -15%; animation-delay: -5s; }
-        .blob-3 { width: 500px; height: 500px; bottom: -10%; left: 20%; animation-delay: -2s; }
+        .blob-1 { width: 800px; height: 800px; top: -10%; left: -10%; }
+        .blob-2 { width: 700px; height: 700px; top: 30%; right: -15%; animation-delay: -5s; }
+        .blob-3 { width: 600px; height: 600px; bottom: -10%; left: 20%; animation-delay: -2s; }
         
         @keyframes float {
             0% { transform: translate3d(0, 0, 0); }
@@ -57,7 +45,7 @@
         #enter-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.5s ease;
+            cursor: pointer; transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.8s ease;
         }
         #enter-screen h2 {
             font-size: 0.8rem; letter-spacing: 8px; font-weight: 300; text-transform: uppercase;
@@ -82,8 +70,8 @@
         section { 
             min-height: 100vh; width: 100%; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; padding: 100px 20px;
-            opacity: 0; filter: blur(10px); transform: translateY(30px); 
-            transition: all 0.8s ease-out; /* Animazione più secca per meno lag */
+            opacity: 0; filter: blur(20px); transform: translateY(50px); 
+            transition: all 1s cubic-bezier(0.2, 1, 0.3, 1);
             position: relative; z-index: 10;
         }
         section.revealed { opacity: 1; filter: blur(0); transform: translateY(0); }
@@ -91,44 +79,21 @@
         .glow-text { background: linear-gradient(180deg, #fff 30%, #555 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* --- TEAM GRID --- */
-        .team-grid { 
-            display: flex; 
-            gap: 40px; 
-            margin-top: 60px; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            max-width: 1200px;
-        }
+        .team-grid { display: flex; gap: 40px; margin-top: 60px; flex-wrap: wrap; justify-content: center; max-width: 1200px; }
         .team-card { text-align: center; }
-        
-        .pfp { 
-            width: 160px; 
-            height: 160px; 
-            border-radius: 50%; 
-            margin-bottom: 20px; 
-            border: 2px solid rgba(255,255,255,0.2); 
-            overflow: hidden; 
-        }
+        .pfp { width: 160px; height: 160px; border-radius: 50%; margin-bottom: 20px; border: 2px solid rgba(255,255,255,0.2); overflow: hidden; }
         .pfp img { width: 100%; height: 100%; object-fit: cover; }
-        .founder-tag { 
-            display: inline-block; 
-            margin-top: 10px; 
-            padding: 5px 15px; 
-            font-size: 0.65rem; 
-            font-weight: 800; 
-            letter-spacing: 2px; 
-            color: rgba(255,255,255,0.8); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 50px; 
-        }
+        .founder-tag { display: inline-block; margin-top: 10px; padding: 5px 15px; font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; }
 
-        /* --- PRICING CARD --- */
+        /* --- PRICING CARD (Effetto Vetro Ripristinato) --- */
         .price-card { 
-            background: rgba(20, 20, 20, 0.8); /* Colore solido invece di blur per performance */
-            border: 1px solid rgba(255, 255, 255, 0.08); 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
             padding: 80px 60px; 
             border-radius: 60px; 
             width: 100%; max-width: 500px; 
+            backdrop-filter: blur(15px); /* Ripristinato ma più leggero */
+            -webkit-backdrop-filter: blur(15px);
             text-align: center; 
         }
         .price-val { font-size: 8rem; font-weight: 800; letter-spacing: -5px; margin: 20px 0; line-height: 1; }
@@ -142,7 +107,9 @@
         <h2>Click to Enter</h2>
     </div>
 
-    <audio id="bgMusic" src="https://cdn.discordapp.com/attachments/796204118385098843/1470835575593631868/Caleb_Bryant_-_The_Fallen.mp3?ex=698cbde0&is=698b6c60&hm=228c2602a7750adb7b6cd2bb61111ed48f7f93c90bd962724a29d6465415a6b7&" loop></audio>
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.discordapp.com/attachments/796204118385098843/1470835575593631868/Caleb_Bryant_-_The_Fallen.mp3?ex=698cbde0&is=698b6c60&hm=228c2602a7750adb7b6cd2bb61111ed48f7f93c90bd962724a29d6465415a6b7&" type="audio/mpeg">
+    </audio>
 
     <div class="bg-wrapper">
         <div class="blob blob-1"></div>
@@ -217,9 +184,18 @@
         function startExperience() {
             document.getElementById('enter-screen').classList.add('hide-enter');
             const music = document.getElementById('bgMusic');
-            music.volume = 0.3; 
-            music.play();
-            setTimeout(handleReveal, 100);
+            
+            // Prova a riprodurre con gestione errori
+            music.volume = 0.3;
+            let playPromise = music.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay impedito o link scaduto.");
+                });
+            }
+            
+            setTimeout(handleReveal, 200);
         }
 
         function handleReveal() {
@@ -228,7 +204,7 @@
 
             sections.forEach(s => {
                 const rect = s.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.9) {
+                if (rect.top < window.innerHeight * 0.85) {
                     s.classList.add('revealed');
                 }
             });
@@ -248,7 +224,7 @@
             });
         }
 
-        window.addEventListener('scroll', handleReveal, { passive: true });
+        window.addEventListener('scroll', handleReveal);
         window.onload = () => { window.scrollTo(0, 0); handleReveal(); };
     </script>
 </body>
