@@ -17,40 +17,47 @@
         
         body { background-color: #000; color: white; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 
-        /* --- BACKGROUND MESH --- */
+        /* --- BACKGROUND MESH OTTIMIZZATO --- */
         .bg-wrapper {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 0; background: #000; overflow: hidden; pointer-events: none;
+            transform: translateZ(0); /* Forza GPU */
         }
         
         .bg-wrapper::after {
             content: "";
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
             z-index: 1;
         }
 
         .blob {
-            position: absolute; border-radius: 50%; 
-            background: radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.07) 40%, rgba(0,0,0,0) 70%);
-            filter: blur(70px); animation: float 20s infinite alternate ease-in-out;
-            will-change: transform; z-index: 0;
+            position: absolute; 
+            border-radius: 50%; 
+            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0) 70%);
+            filter: blur(45px); /* Ridotto per performance massime */
+            animation: float 20s infinite alternate ease-in-out;
+            will-change: transform; 
+            transform: translate3d(0,0,0); /* Forza accelerazione hardware */
+            z-index: 0;
         }
-        .blob-1 { width: 900px; height: 900px; top: -10%; left: -10%; }
-        .blob-2 { width: 800px; height: 800px; top: 30%; right: -15%; animation-delay: -5s; }
-        .blob-3 { width: 700px; height: 700px; bottom: -10%; left: 20%; animation-delay: -2s; }
+        
+        /* Blob ridimensionati per caricare meno pixel */
+        .blob-1 { width: 700px; height: 700px; top: -10%; left: -10%; }
+        .blob-2 { width: 600px; height: 600px; top: 30%; right: -15%; animation-delay: -5s; }
+        .blob-3 { width: 500px; height: 500px; bottom: -10%; left: 20%; animation-delay: -2s; }
         
         @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(100px, 80px) scale(1.1); }
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(50px, 40px, 0); }
         }
 
         /* --- OVERLAY --- */
         #enter-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.8s ease;
+            cursor: pointer; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.5s ease;
         }
         #enter-screen h2 {
             font-size: 0.8rem; letter-spacing: 8px; font-weight: 300; text-transform: uppercase;
@@ -75,8 +82,8 @@
         section { 
             min-height: 100vh; width: 100%; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; padding: 100px 20px;
-            opacity: 0; filter: blur(40px); transform: translateY(100px); 
-            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+            opacity: 0; filter: blur(10px); transform: translateY(30px); 
+            transition: all 0.8s ease-out; /* Animazione più secca per meno lag */
             position: relative; z-index: 10;
         }
         section.revealed { opacity: 1; filter: blur(0); transform: translateY(0); }
@@ -92,8 +99,7 @@
             justify-content: center; 
             max-width: 1200px;
         }
-        .team-card { text-align: center; transition: 0.3s ease; }
-        .team-card:hover { transform: translateY(-10px); }
+        .team-card { text-align: center; }
         
         .pfp { 
             width: 160px; 
@@ -101,7 +107,6 @@
             border-radius: 50%; 
             margin-bottom: 20px; 
             border: 2px solid rgba(255,255,255,0.2); 
-            box-shadow: 0 0 30px rgba(255,255,255,0.05); 
             overflow: hidden; 
         }
         .pfp img { width: 100%; height: 100%; object-fit: cover; }
@@ -119,18 +124,16 @@
 
         /* --- PRICING CARD --- */
         .price-card { 
-            background: rgba(255, 255, 255, 0.03); 
+            background: rgba(20, 20, 20, 0.8); /* Colore solido invece di blur per performance */
             border: 1px solid rgba(255, 255, 255, 0.08); 
             padding: 80px 60px; 
             border-radius: 60px; 
             width: 100%; max-width: 500px; 
-            backdrop-filter: blur(20px); 
             text-align: center; 
         }
         .price-val { font-size: 8rem; font-weight: 800; letter-spacing: -5px; margin: 20px 0; line-height: 1; }
         .price-list { list-style: none; color: #ccc; font-size: 1rem; line-height: 2.8; margin-top: 40px; text-align: left; padding-left: 20px; }
         .buy-btn { display: block; width: 100%; padding: 25px; background: white; color: black; text-align: center; font-weight: 800; text-decoration: none; border-radius: 100px; margin-top: 50px; transition: 0.4s; }
-        .buy-btn:hover { background: #e0e0e0; transform: scale(1.02); }
     </style>
 </head>
 <body>
@@ -211,15 +214,12 @@
     </main>
 
     <script>
-        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-        window.scrollTo(0, 0);
-
         function startExperience() {
             document.getElementById('enter-screen').classList.add('hide-enter');
             const music = document.getElementById('bgMusic');
             music.volume = 0.3; 
             music.play();
-            setTimeout(handleReveal, 200);
+            setTimeout(handleReveal, 100);
         }
 
         function handleReveal() {
@@ -228,16 +228,14 @@
 
             sections.forEach(s => {
                 const rect = s.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.15) {
+                if (rect.top < window.innerHeight * 0.9) {
                     s.classList.add('revealed');
-                } else {
-                    s.classList.remove('revealed');
                 }
             });
 
             let current = "";
             sections.forEach(section => {
-                if (scrollPos >= section.offsetTop - 200) {
+                if (scrollPos >= section.offsetTop - 300) {
                     current = section.getAttribute('id');
                 }
             });
@@ -250,7 +248,7 @@
             });
         }
 
-        window.addEventListener('scroll', handleReveal);
+        window.addEventListener('scroll', handleReveal, { passive: true });
         window.onload = () => { window.scrollTo(0, 0); handleReveal(); };
     </script>
 </body>
