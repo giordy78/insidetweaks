@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inside Tweaks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        html { 
+            background-color: #000; 
+            scroll-behavior: smooth; 
+        }
+        
+        body { background-color: #000; color: white; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+        /* --- BACKGROUND MESH --- */
+        .bg-wrapper {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; background: #000; overflow: hidden; pointer-events: none;
+        }
+        
+        .bg-wrapper::after {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+        }
+
+        .blob {
+            position: absolute; border-radius: 50%; 
+            background: radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.07) 40%, rgba(0,0,0,0) 70%);
+            filter: blur(70px); animation: float 20s infinite alternate ease-in-out;
+            will-change: transform; z-index: 0;
+        }
+        .blob-1 { width: 900px; height: 900px; top: -10%; left: -10%; }
+        .blob-2 { width: 800px; height: 800px; top: 30%; right: -15%; animation-delay: -5s; }
+        .blob-3 { width: 700px; height: 700px; bottom: -10%; left: 20%; animation-delay: -2s; }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 80px) scale(1.1); }
+        }
+
+        /* --- OVERLAY --- */
+        #enter-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.8s ease;
+        }
+        #enter-screen h2 {
+            font-size: 0.8rem; letter-spacing: 8px; font-weight: 300; text-transform: uppercase;
+            color: rgba(255,255,255,0.6); animation: pulseText 2s infinite;
+        }
+        @keyframes pulseText { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .hide-enter { opacity: 0 !important; transform: translateY(-100%); pointer-events: none; }
+
+        /* --- NAVBAR --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 30px 60px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+        }
+        .logo { font-weight: 800; letter-spacing: 2px; }
+        nav ul { display: flex; gap: 40px; list-style: none; }
+        nav ul li a { color: #555; text-decoration: none; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; transition: 0.4s; }
+        .nav-active, nav ul li a:hover { color: #fff !important; }
+        .discord-link { color: #fff; text-decoration: none; font-size: 0.75rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; transition: 0.3s; }
+        .discord-link:hover { background: #fff; color: #000; }
+
+        /* --- SEZIONI --- */
+        section { 
+            min-height: 100vh; width: 100%; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; padding: 100px 20px;
+            opacity: 0; filter: blur(40px); transform: translateY(100px); 
+            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+            position: relative; z-index: 10;
+        }
+        section.revealed { opacity: 1; filter: blur(0); transform: translateY(0); }
+
+        .glow-text { background: linear-gradient(180deg, #fff 30%, #555 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* --- TEAM GRID --- */
+        .team-grid { 
+            display: flex; 
+            gap: 40px; 
+            margin-top: 60px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            max-width: 1200px;
+        }
+        .team-card { text-align: center; transition: 0.3s ease; }
+        .team-card:hover { transform: translateY(-10px); }
+        
+        .pfp { 
+            width: 160px; 
+            height: 160px; 
+            border-radius: 50%; 
+            margin-bottom: 20px; 
+            border: 2px solid rgba(255,255,255,0.2); 
+            box-shadow: 0 0 30px rgba(255,255,255,0.05); 
+            overflow: hidden; 
+        }
+        .pfp img { width: 100%; height: 100%; object-fit: cover; }
+        .founder-tag { 
+            display: inline-block; 
+            margin-top: 10px; 
+            padding: 5px 15px; 
+            font-size: 0.65rem; 
+            font-weight: 800; 
+            letter-spacing: 2px; 
+            color: rgba(255,255,255,0.8); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 50px; 
+        }
+
+        /* --- PRICING CARD --- */
+        .price-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            padding: 80px 60px; 
+            border-radius: 60px; 
+            width: 100%; max-width: 500px; 
+            backdrop-filter: blur(20px); 
+            text-align: center; 
+        }
+        .price-val { font-size: 8rem; font-weight: 800; letter-spacing: -5px; margin: 20px 0; line-height: 1; }
+        .price-list { list-style: none; color: #ccc; font-size: 1rem; line-height: 2.8; margin-top: 40px; text-align: left; padding-left: 20px; }
+        .buy-btn { display: block; width: 100%; padding: 25px; background: white; color: black; text-align: center; font-weight: 800; text-decoration: none; border-radius: 100px; margin-top: 50px; transition: 0.4s; }
+        .buy-btn:hover { background: #e0e0e0; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+    <div id="enter-screen" onclick="startExperience()">
+        <h2>Click to Enter</h2>
+    </div>
+
+    <audio id="bgMusic" src="https://cdn.discordapp.com/attachments/796204118385098843/1470835575593631868/Caleb_Bryant_-_The_Fallen.mp3?ex=698cbde0&is=698b6c60&hm=228c2602a7750adb7b6cd2bb61111ed48f7f93c90bd962724a29d6465415a6b7&" loop></audio>
+
+    <div class="bg-wrapper">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <header>
+        <div class="logo">INSIDE</div>
+        <nav>
+            <ul>
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#team" class="nav-link">Team</a></li>
+                <li><a href="#pricing" class="nav-link">Pricing</a></li>
+            </ul>
+        </nav>
+        <a href="https://discord.gg/insidetweaks" target="_blank" class="discord-link">Discord</a>
+    </header>
+
+    <main>
+        <section id="home">
+            <h1 style="font-size: clamp(3rem, 12vw, 8rem); font-weight: 800; text-align: center; line-height: 0.8; letter-spacing: -4px;"><br><span class="glow-text">Inside Tweaks</span></h1>
+            <p style="color: #666; margin-top: 40px; text-align: center; font-size: 1.2rem; font-weight: 500;">Best Tweak Optimization, no discussions.</p>
+        </section>
+
+        <section id="team">
+            <h2 class="glow-text" style="font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 800; margin-bottom: 70px;">TEAM</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="pfp"><img src="https://cdn.discordapp.com/avatars/796199973016174622/ac4b5bf0836846929d324c700682fe42.webp?size=1024"></div>
+                    <h3 style="font-size: 1.4rem; letter-spacing: 2px;">NAX</h3>
+                    <div class="founder-tag">FOUNDER</div>
+                </div>
+                <div class="team-card">
+                    <div class="pfp"><img src="https://cdn.discordapp.com/avatars/1013790522042749038/f54fea0b39c63d7508a2f7fe67cca024.webp?size=1024"></div>
+                    <h3 style="font-size: 1.4rem; letter-spacing: 2px;">2MRK</h3>
+                    <div class="founder-tag">FOUNDER</div>
+                </div>
+                <div class="team-card">
+                    <div class="pfp"><img src="https://cdn.discordapp.com/avatars/1033466553582235649/8df5fe427c7890779d017324fb293ab4.webp?size=1024" alt="Tommo"></div>
+                    <h3 style="font-size: 1.4rem; letter-spacing: 2px;">TOMMO</h3>
+                    <div class="founder-tag">MANAGER</div>
+                </div>
+                <div class="team-card">
+                    <div class="pfp"><img src="https://cdn.discordapp.com/avatars/637651225948454942/d81b0b1a974aa10391c84f7329be706c.webp?size=1024" alt="GXBBO DAYTONA"></div>
+                    <h3 style="font-size: 1.4rem; letter-spacing: 2px;">GXBBO</h3>
+                    <div class="founder-tag">STAFF</div>
+                </div>
+                <div class="team-card">
+                    <div class="pfp"><img src="https://cdn.discordapp.com/avatars/768903993836699648/d9a476beb7d09584b41181b8d84fc7fc.webp?size=1024" alt="PANTOFOLE"></div>
+                    <h3 style="font-size: 1.4rem; letter-spacing: 2px;">PANTOFOLE</h3>
+                    <div class="founder-tag">STAFF</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing">
+            <div class="price-card">
+                <span style="font-weight: 800; letter-spacing: 6px; text-transform: uppercase; font-size: 0.75rem; color: #555; display: block; margin-bottom: 10px;">Full Experience</span>
+                <h2 style="font-size: 2.2rem; font-weight: 800;">Inside Tweaks</h2>
+                <div class="price-val glow-text">€25</div>
+                <ul class="price-list">
+                    <li>・ Best Optimization</li>
+                    <li>・ 24/7 Support</li>
+                </ul>
+                <a href="https://discord.gg/insidetweaks" target="_blank" class="buy-btn">PURCHASE</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+
+        function startExperience() {
+            document.getElementById('enter-screen').classList.add('hide-enter');
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.3; 
+            music.play();
+            setTimeout(handleReveal, 200);
+        }
+
+        function handleReveal() {
+            const sections = document.querySelectorAll('section');
+            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+
+            sections.forEach(s => {
+                const rect = s.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.15) {
+                    s.classList.add('revealed');
+                } else {
+                    s.classList.remove('revealed');
+                }
+            });
+
+            let current = "";
+            sections.forEach(section => {
+                if (scrollPos >= section.offsetTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('nav-active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('nav-active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleReveal);
+        window.onload = () => { window.scrollTo(0, 0); handleReveal(); };
+    </script>
+</body>
+</html>
